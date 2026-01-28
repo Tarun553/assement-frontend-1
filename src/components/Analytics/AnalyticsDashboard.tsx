@@ -1,5 +1,3 @@
-
-
 import React, { useMemo, useState } from "react";
 import { useFormContext } from "../../context/FormContext";
 import {
@@ -28,6 +26,32 @@ import {
   getXAxisEligibleFields,
 } from "@/utils/aggregate";
 import { XAxisMultiSelect } from "./XAxisMultiSelect";
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    payload: Record<string, unknown>;
+  }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background/80 backdrop-blur-md border border-border p-3 rounded-xl shadow-xl animate-in fade-in zoom-in-95 duration-200">
+        <p className="text-sm font-bold text-foreground mb-1">{label}</p>
+        <div className="flex items-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-primary" />
+          <p className="text-sm font-medium text-muted-foreground">
+            Count: <span className="text-foreground">{payload[0].value}</span>
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const AnalyticsDashboard: React.FC = () => {
   const { fields, responses } = useFormContext();
@@ -92,8 +116,8 @@ export const AnalyticsDashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2 shadow-lg border-primary/5">
-          <CardHeader className="space-y-3 pb-7">
+        <Card className="md:col-span-2 shadow-lg border-primary/5 overflow-hidden">
+          <CardHeader className="space-y-3 pb-7 border-b bg-muted/20">
             <div>
               <CardTitle className="text-xl">Response Distribution</CardTitle>
               <CardDescription>
@@ -108,43 +132,70 @@ export const AnalyticsDashboard: React.FC = () => {
             />
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="pt-8">
             <div className="h-[350px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient
+                      id="barGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor="hsl(var(--primary))"
+                        stopOpacity={0.9}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="hsl(var(--primary))"
+                        stopOpacity={0.2}
+                      />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     vertical={false}
-                    stroke="hsl(var(--muted))"
+                    stroke="hsl(var(--muted-foreground))"
+                    opacity={0.1}
                   />
                   <XAxis
                     dataKey="name"
                     stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
+                    fontSize={11}
+                    fontWeight={500}
                     tickLine={false}
                     axisLine={false}
                     interval={0}
                     angle={-15}
                     height={60}
+                    dy={10}
                   />
                   <YAxis
                     stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
+                    fontSize={11}
+                    fontWeight={500}
                     tickLine={false}
                     axisLine={false}
+                    tickFormatter={(val) => Math.floor(val).toString()}
                   />
                   <RechartsTooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      borderRadius: "8px",
-                      border: "1px solid hsl(var(--border))",
-                    }}
+                    content={<CustomTooltip />}
+                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.1 }}
                   />
                   <Bar
                     dataKey="count"
-                    fill="hsl(var(--primary))"
-                    radius={[4, 4, 0, 0]}
+                    fill="url(#barGradient)"
+                    radius={[6, 6, 0, 0]}
                     barSize={40}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
                   />
                 </BarChart>
               </ResponsiveContainer>
