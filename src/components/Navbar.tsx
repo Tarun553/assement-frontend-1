@@ -16,7 +16,7 @@ const Navbar = () => {
   ] as const;
 
   return (
-    <nav className="container mx-auto sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md transition-all">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md transition-all">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
         <div className="flex items-center gap-3">
           <LineHoverLink
