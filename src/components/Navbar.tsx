@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useViewContext } from "../hooks/useView";
 import { ModeToggle } from "./mode-toggle";
 import { LineHoverLink } from "./ui/line-hover-link";
+import { AIGenerator } from "./AI/AIGenerator";
 
 const Navbar = () => {
   const { view, setView } = useViewContext();
@@ -51,7 +52,10 @@ const Navbar = () => {
             </Button>
           ))}
         </div>
-        <ModeToggle />
+        <div className="flex items-center gap-1.5 p-1">
+          <AIGenerator />
+          <ModeToggle />
+        </div>
       </div>
     </nav>
   );
